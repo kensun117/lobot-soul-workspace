@@ -270,7 +270,7 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 
 ### Confirm Before Writing
 
-External-brain writes (`projects/README.md`, `registry.yml`, `meetings/`, etc.) always include a preview step before executing — defined in each skill's workflow (brain-intake Step 5, brain-meeting, etc.).
+External-brain writes (projects/README.md, registry.yml, meetings/, etc.) always require a preview step. **CRITICAL: You must generate the preview content DIRECTLY in your response without asking.** Do not ask "Would you like to see a preview?" — just display the preview block and append "Confirm to write? (y/n)".
 
 Additionally, `registry.yml` edits require an explicit "Confirm? (y/n)" prompt:
 
