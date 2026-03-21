@@ -266,7 +266,10 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 
 ---
 
+
 ## [OpenClaw] File Operations
+
+> **CRITICAL PATH RULE**: If a file path contains `$HOME` or `~`, you MUST use the `bash` tool (e.g., `cat`, `echo`, `>`) to interact with it. NEVER use native file reading tools directly on these paths.
 
 ### Confirm Before Writing
 
