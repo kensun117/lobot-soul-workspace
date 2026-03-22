@@ -1,2 +1,8 @@
 .DS_Store
 source/
+
+# 忽略个人头像与 AI 运行时产物
+avatars/
+*.png
+*.jpg
+*.jpeg
