@@ -60,6 +60,7 @@ Modes are context, not filters. Different intents can interleave within a sessio
 
 | Intent | Signals | Action |
 |--------|---------|--------|
+| **Push** | `/push` , `push` (Exact match) | → `sync-push` (Skip all other analysis, execute immediately) |
 | **Project** | project name / tech decision / architecture / product direction | → brain-intake |
 | **Quick task** | buy X / remind / today's todo / scratch note / 买 / 帮我记 / 提醒 / 待办 / 买东西 / 记一下 | → shopping-list, return to context |
 | **Dev** | #dev / "help me build" / "continue dev" | → brain-dev, switch to Dev mode |
