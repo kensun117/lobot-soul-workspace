@@ -44,8 +44,26 @@ From the incoming content, extract:
 
 **5. Preview and confirm**
 
-Show the user what will be written before writing anything:
+Show the user what will be written before writing anything.
 
+If `has_issues: true`:
+```
+Ready to write to `${BRAIN_SOURCE:-$HOME/source/bunny_stack}/[brain_file]`:
+
+**Conclusions**
+→ [conclusion 1]
+
+**Action items** (GitHub Issues will be created automatically)
+- [ ] [action 1]
+
+**Open questions** (if any)
+- [ ] [question 1]
+
+repo: [git field]
+Confirm? (y/n)
+```
+
+If `has_issues: false` or field absent:
 ```
 Ready to write to `${BRAIN_SOURCE:-$HOME/source/bunny_stack}/[brain_file]`:
 
@@ -61,28 +79,27 @@ Ready to write to `${BRAIN_SOURCE:-$HOME/source/bunny_stack}/[brain_file]`:
 Confirm? (y/n)
 ```
 
-If the project has `has_issues: true`, after write confirmation also ask:
-```
-Create GitHub Issues for the action items above? (y/n)
-repo: [git field]
-```
+Only one confirmation prompt — no separate "Create GitHub Issues?" question.
 
 **6. Write and push**
 
 After user confirms:
 
-1. Append conclusions to the "核心结论" section of README.md
-2. Append action items to the "行动项" section
-3. Append open questions to the "未决问题" section
-4. Update "当前状态" if a clear status change is implied
-5. If user confirmed: create one GitHub Issue per action item
-6. `cd ${BRAIN_SOURCE:-$HOME/source/bunny_stack} && git add . && git commit -m "brain: update [project name]" && git push`
+1. If `has_issues: true`: run `gh issue create --repo [git] --title "[action text]"` for **each** action item in order; capture the returned issue number.
+2. Append to README.md:
+   - Conclusions → "核心结论" section
+   - Action items → "行动项" section
+     - With issues: `- [ ] #<issue_number>` (one per item, in creation order)
+     - Without issues: `- [ ] [action text]`
+   - Open questions → "未决问题" section
+3. Update "当前状态" if a clear status change is implied.
+4. `cd ${BRAIN_SOURCE:-$HOME/source/bunny_stack} && git add . && git commit -m "brain: update [project name]" && git push`
 
 Reply with:
 ```
 ✅ Written and pushed: [project name]
 - [N] conclusions, [M] action items
-- Issues: [list] or "not created"
+- Issues: [#1, #2, ...] or "not created"
 ```
 
 ## Edge cases

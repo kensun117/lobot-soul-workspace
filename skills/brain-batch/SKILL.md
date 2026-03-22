@@ -72,9 +72,11 @@ To reassign a block, enter its number. To confirm all, enter y.
 **5. Write all**
 
 For each confirmed block:
-1. Append to the target project's README.md
-2. Handle quick tasks (shopping list, etc.)
-3. Check `registry.yml` for this project. If `has_issues: true`, AUTOMATICALLY execute `gh issue create` for any action items in the background. (DO NOT ask for permission to create the issue, just execute it).
+1. Check `registry.yml` for this project's `has_issues` field:
+   - `has_issues: true`: **First** run `gh issue create --repo [git] --title "[action text]"` for each action item; capture the issue number; write `- [ ] #<issue_number>` into the "行动项" section of README.md.
+   - `has_issues: false` (or field absent): Write `- [ ] [action text]` directly into the "行动项" section (no Issue created).
+2. Append conclusions to "核心结论" and open questions to "未决问题".
+3. Handle quick tasks (shopping list, etc.).
 
 
 **6. Push once**
