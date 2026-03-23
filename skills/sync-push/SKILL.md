@@ -19,6 +19,17 @@ cd /Users/tensorinfo/source/bunny_stack && git add . && git commit -m "chore: ma
 cd /Users/tensorinfo/clawd && git add . && git commit -m "chore: manual quick sync" && git push
 ```
 
+执行完后输出摘要，显示本地完整路径和 remote URL：
+
+```
+✅ bunny_stack
+   local : /Users/tensorinfo/source/bunny_stack
+   remote: <git -C /Users/tensorinfo/source/bunny_stack remote get-url origin>
+✅ workspace
+   local : /Users/tensorinfo/clawd
+   remote: <git -C /Users/tensorinfo/clawd remote get-url origin>
+```
+
 ---
 
 ### 情况二：有 id 参数
@@ -31,9 +42,12 @@ cd /Users/tensorinfo/clawd && git add . && git commit -m "chore: manual quick sy
      ```
    - **未找到或 `local_path` 为 null**：跳过，不中断其他目标
 
-3. 所有目标执行完后输出摘要：
-   ```
-   ✅ bunny_stack — pushed
-   ❌ side-project-idea — skipped (local_path is null)
-   ❌ unknown-id — skipped (not found in registry)
-   ```
+3. 所有目标执行完后输出摘要，显示本地完整路径和 registry 中的 `git` 字段：
+
+```
+✅ bunny_stack
+   local : /Users/tensorinfo/source/bunny_stack
+   remote: https://github.com/tenforInfo/bunny_stack
+❌ side-project-idea — skipped (local_path is null)
+❌ unknown-id — skipped (not found in registry)
+```
