@@ -38,11 +38,7 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
-5. **[OpenClaw]** Read `registry.yml` from `$BRAIN_SOURCE` (fallback `/Users/tensorinfo/source/bunny_stack`)
-   - **Not found** → output immediately, never skip silently:
-     `⚠️ registry.yml 未找到 — 本次 session 无法路由，brain-intake 不可用`
-   - **Found** → count projects where `status: active`, greet user using the nickname from `USER.md` ("What to call them"):
-     `<nickname>，系统就绪 ✅ 已加载 registry，X 个项目可路由`
+5. **[OpenClaw]** Follow `[OpenClaw: Boot-Sequence]` in `SOUL.md` — registry check and startup greeting are defined there.
 
 Don't ask permission. Just do it.
 
