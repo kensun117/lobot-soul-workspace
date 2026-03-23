@@ -19,6 +19,17 @@ git -C /Users/tensorinfo/source/bunny_stack pull
 git -C /Users/tensorinfo/clawd pull
 ```
 
+After execution, print summary with local path and git remote for each target:
+
+```
+✅ bunny_stack
+   local : /Users/tensorinfo/source/bunny_stack
+   remote: https://github.com/tenforInfo/bunny_stack
+✅ workspace
+   local : /Users/tensorinfo/clawd
+   remote: <run `git -C /Users/tensorinfo/clawd remote get-url origin`>
+```
+
 ---
 
 ### Case 2: With id args
@@ -31,9 +42,12 @@ git -C /Users/tensorinfo/clawd pull
      ```
    - **Not found or `local_path` is null**: skip, do not interrupt other targets
 
-3. Print summary after all targets:
-   ```
-   ✅ bunny_stack — pulled
-   ❌ side-project-idea — skipped (local_path is null)
-   ❌ unknown-id — skipped (not found in registry)
-   ```
+3. Print summary after all targets — include local path and git remote URL from registry (`git` field):
+
+```
+✅ bunny_stack
+   local : /Users/tensorinfo/source/bunny_stack
+   remote: https://github.com/tenforInfo/bunny_stack
+❌ side-project-idea — skipped (local_path is null)
+❌ unknown-id — skipped (not found in registry)
+```
