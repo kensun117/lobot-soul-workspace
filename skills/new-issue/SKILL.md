@@ -1,5 +1,5 @@
 ---
-name: create-issue
+name: new-issue
 description: Use this skill when the user asks to create a GitHub issue, report a bug, or request a feature. It acts as a Product Manager, standardizing the input into a professional issue with acceptance criteria, asking for confirmation, and executing the creation via the GitHub CLI.
 user-invocable: true
 metadata:
