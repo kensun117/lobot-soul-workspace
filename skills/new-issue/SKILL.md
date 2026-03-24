@@ -48,3 +48,10 @@ cat << 'EOF' > /tmp/openclaw_issue_draft.md
 EOF
 
 gh issue create --repo [target_repo] --title "[Title]" -F /tmp/openclaw_issue_draft.md
+```
+
+Capture the returned issue number/URL and reply **exactly** with this single line, then **stop**:
+
+`✅ Issue 已完美建档: #[编号] - [标题] - [URL]`
+
+**🚨 STOP HERE.** Do NOT ask follow-up questions (no PR, no assignee, no "anything else"). Await the next user task in silence.
