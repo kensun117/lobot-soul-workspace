@@ -19,15 +19,17 @@ git -C /Users/tensorinfo/source/bunny_stack pull
 git -C /Users/tensorinfo/clawd pull
 ```
 
-After execution, print summary with local path and git remote for each target:
+After execution, print summary with local path, remote URL, and number of changes received (from git pull output — e.g. "3 files changed"):
 
 ```
 ✅ bunny_stack
    local : /Users/tensorinfo/source/bunny_stack
    remote: https://github.com/tenforInfo/bunny_stack
+   changes: 3 files changed
 ✅ workspace
    local : /Users/tensorinfo/clawd
-   remote: <run `git -C /Users/tensorinfo/clawd remote get-url origin`>
+   remote: <git -C /Users/tensorinfo/clawd remote get-url origin>
+   changes: already up to date
 ```
 
 ---
@@ -42,12 +44,13 @@ After execution, print summary with local path and git remote for each target:
      ```
    - **Not found or `local_path` is null**: skip, do not interrupt other targets
 
-3. Print summary after all targets — include local path and git remote URL from registry (`git` field):
+3. Print summary after all targets — include local path, remote from registry `git` field, and changes received:
 
 ```
 ✅ bunny_stack
    local : /Users/tensorinfo/source/bunny_stack
    remote: https://github.com/tenforInfo/bunny_stack
+   changes: 2 files changed
 ❌ side-project-idea — skipped (local_path is null)
 ❌ unknown-id — skipped (not found in registry)
 ```
