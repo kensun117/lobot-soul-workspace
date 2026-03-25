@@ -69,22 +69,42 @@ If the branch already exists, report the error and stop.
 
 ## Step 3: Prompt Construction & Tmux Launch
 
+**Download images from issue** (if any):
+
+```bash
+mkdir -p <worktree_dir>/issue-assets
+gh issue view <issue_number> --repo <git_url> --json body,comments \
+  --jq '[.body] + (.comments | map(.body)) | join("\n")' \
+  | grep -oE 'https://github.com/user-attachments/assets/[^ )]+' \
+  | while read url; do
+      fname=$(basename "$url" | cut -d'?' -f1)
+      [[ "$fname" != *.* ]] && fname="${fname}.png"
+      curl -sL "$url" -o "<worktree_dir>/issue-assets/$fname"
+    done
+```
+
+If no images are found, the directory remains empty — no error.
+
 **Write instruction file** — use unquoted `EOF` so `$()` expands inline:
 
 ```bash
 cat << EOF > <worktree_dir>/.agent_instruction.txt
-Task: <task_desc>
-$(gh issue view <issue_number> --repo <git_url> --json body,comments \
-  --jq '"## Issue Body\n" + .body + "\n\n## Comments\n" + (.comments | map("### @" + .author.login + "\n" + .body) | join("\n\n"))' \
-  2>/dev/null || echo "No issue body")
+# TASK: <task_desc>
 
-Context: You are working in a git worktree at <worktree_dir>.
-Rules:
-1. Modify code.
-2. Run tests or formatters if available.
-3. Execute: git add . && git commit -m 'feat: <task_desc>'
-4. Execute: git push -u origin <branch_name>
-5. Execute: gh pr create --fill
+# ISSUE DETAILS
+$(gh issue view <issue_number> --repo <git_url> --json body,comments \
+  --jq '"## OP (Original Poster)\n" + .body + "\n\n## DISCUSSION\n" + (.comments | map("### @" + .author.login + ": " + .body) | join("\n\n"))' 2>/dev/null)
+
+# ASSETS
+$(ls <worktree_dir>/issue-assets/ 2>/dev/null | grep -qE '\.' \
+  && echo "The following reference images are downloaded in ./issue-assets/ for your reference:\n$(ls <worktree_dir>/issue-assets/)" \
+  || echo "No visual assets provided.")
+
+# EXECUTION RULES
+1. Multi-turn context: Consider all feedback in the discussion thread above.
+2. Implementation: Modify code in <worktree_dir>.
+3. Verification: Run local tests if available.
+4. Submission: git add . && git commit -m 'feat: <task_desc>' && git push origin <branch_name> && gh pr create --fill
 EOF
 ```
 
