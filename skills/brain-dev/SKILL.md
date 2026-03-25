@@ -117,8 +117,13 @@ tmux has-session -t <tmux_session> 2>/dev/null && tmux kill-session -t <tmux_ses
 **Launch Codex in a detached tmux session:**
 
 ```bash
-tmux new-session -d -s <tmux_session> -c <worktree_dir> \
-  "bash -c 'echo \"🚀 Initializing Codex Task...\"; codex --task \"\$(cat .agent_instruction.txt)\"; echo \"✅ Task completed.\"; exec bash'"
+tmux new-session -d -s <tmux_session> -c <worktree_dir> "bash -c '
+  echo \"🚀 Initializing Codex Task...\";
+  IMAGE_FLAGS=$(ls ./issue-assets/* 2>/dev/null | while read f; do echo -n "-i \"$f\" "; done);
+  eval codex exec --full-auto $IMAGE_FLAGS \"$(cat .agent_instruction.txt)\";
+  echo \"✅ Task completed.\";
+  exec bash
+'"
 ```
 
 ## Step 4: Handoff & Report
