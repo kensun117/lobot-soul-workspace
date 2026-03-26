@@ -124,7 +124,10 @@ tmux has-session -t <tmux_session> 2>/dev/null && tmux kill-session -t <tmux_ses
 **Launch Codex in a detached tmux session:**
 
 ```bash
-tmux new-session -d -s <tmux_session> -c <worktree_dir> 'bash run.sh; exec bash'
+tmux new-session -d -s <tmux_session> -c <worktree_dir> \
+  -e TASK_DESC="<task_desc>" \
+  -e BRANCH_NAME="<branch_name>" \
+  'bash run-codex.sh; exec bash'
 ```
 
 ## Step 4: Handoff & Report
