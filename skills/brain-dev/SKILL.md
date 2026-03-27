@@ -1,17 +1,17 @@
 ---
 name: brain-dev
-description: Execute a development task via Codex. Routes to a project via registry.yml, creates an isolated git worktree, and runs codex inside a detached tmux session to submit a PR.
+description: Execute a development task via Codex. Routes to a project via registry.yml, creates an isolated git worktree, and runs codex via ACP session to submit a PR.
 user-invocable: true
 metadata:
   {
     "openclaw":
       {
-        "requires": { "bins": ["tmux", "codex", "git", "gh", "bash"] },
+        "requires": { "bins": ["codex", "git", "gh", "bash"] },
       },
   }
 ---
 
-# Dev Mode: Tmux + Codex Worker
+# Dev Mode: ACP Codex Worker
 
 Use this skill when the user asks to start development, fix a bug, or implement a feature using the `#dev` trigger.
 
@@ -55,7 +55,6 @@ Once the project is confirmed, execute the following steps via bash.
 - `<task_id>`: `issue-<N>` if an Issue was referenced, otherwise current Unix timestamp (e.g. `task-1710500000`)
 - `<worktree_dir>`: `<base_path>/../agent-worktree-<task_id>`
 - `<branch_name>`: `agent/dev-<task_id>`
-- `<tmux_session>`: `dev-<task_id>`
 
 **Create git worktree:**
 
@@ -67,7 +66,7 @@ git worktree add <worktree_dir> -b <branch_name> origin/main
 
 If the branch already exists, report the error and stop.
 
-## Step 3: Prompt Construction & Tmux Launch
+## Step 3: Prompt Construction & ACP Launch
 
 **Download images from issue** (if any):
 
@@ -85,64 +84,50 @@ gh issue view <issue_number> --repo <git_url> --json body,comments \
 
 If no images are found, the directory remains empty — no error.
 
-**Write instruction file** — use unquoted `EOF` so `$()` expands inline:
+**Start an ACP Codex session in the worktree:**
 
-```bash
-cat << EOF > <worktree_dir>/.agent_instruction.txt
-# TASK: <task_desc>
+Open a Codex ACP session rooted at `<worktree_dir>`:
 
-# ISSUE DETAILS
+> "Start a persistent Codex session in this repository. Stay focused on the codebase."
+
+**Send the task prompt to Codex:**
+
+```
+Implement the following task: <task_desc>
+
+## Issue Details
 $(gh issue view <issue_number> --repo <git_url> --json body,comments \
-  --jq '"## OP (Original Poster)\n" + .body + "\n\n## DISCUSSION\n" + (.comments | map("### @" + .author.login + ": " + .body) | join("\n\n"))' 2>/dev/null)
+  --jq '"## OP (Original Poster)\n" + .body + "\n\n## Discussion\n" + (.comments | map("### @" + .author.login + ": " + .body) | join("\n\n"))' 2>/dev/null)
 
-# ASSETS
+## Assets
 $(ls <worktree_dir>/issue-assets/ 2>/dev/null | grep -qE '\.' \
-  && echo "The following reference images are downloaded in ./issue-assets/ for your reference:\n$(ls <worktree_dir>/issue-assets/)" \
+  && echo "The following reference images are in ./issue-assets/:\n$(ls <worktree_dir>/issue-assets/)" \
   || echo "No visual assets provided.")
 
-# EXECUTION RULES
-1. Multi-turn context: Consider all feedback in the discussion thread above.
-2. Implementation: Modify code in <worktree_dir>.
-3. Verification: Run local tests if available.
-4. Submission: git add . && git commit -m 'feat: <task_desc>' && git push origin <branch_name> && gh pr create --fill
-EOF
+## Execution Rules
+1. Consider all feedback in the discussion thread above.
+2. Modify code only within this worktree.
+3. Run local tests if available; fix any failures.
+4. If anything is unclear — stop and ask the user. Do NOT continue blindly.
+5. When done: git add . && git commit -m 'feat: <task_desc>' && git push origin <branch_name> && gh pr create --fill
 ```
 
-**Copy bundled launcher into worktree:**
-
-```bash
-cp scripts/run-codex.sh <worktree_dir>/run-codex.sh
-chmod +x <worktree_dir>/run-codex.sh
-```
-
-**Kill any existing session with the same name:**
-
-```bash
-tmux has-session -t <tmux_session> 2>/dev/null && tmux kill-session -t <tmux_session>
-```
-
-**Launch Codex in a detached tmux session:**
-
-```bash
-tmux new-session -d -s <tmux_session> -c <worktree_dir> \
-  -e TASK_DESC="<task_desc>" \
-  -e BRANCH_NAME="<branch_name>" \
-  'bash run-codex.sh; exec bash'
-```
+**Mandatory pause conditions (human-in-the-loop):**
+- Issue description is ambiguous
+- Change involves database schema or API interface
+- Code contradicts the issue description
+- Required change is out of scope
 
 ## Step 4: Handoff & Report
 
-1. Wait 3 seconds.
-2. Capture initial output: `tmux capture-pane -p -t <tmux_session>`
-3. Reply with the final status below, then return to Brain mode:
+Reply with the final status below, then return to Brain mode:
 
 ```
-✅ Dev 任务已在后台启动！
+✅ Codex ACP 会话已启动！
 📂 工作区 (Worktree): <worktree_dir>
-🖥️  Tmux Session: <tmux_session>
 
-Codex 正在独立环境中编写代码并准备提交 PR。
-👉 监工方式: 在终端输入 tmux attach -t <tmux_session>
+Codex 正在交互式 ACP 会话中实现任务。完成后将自动提交 PR。
+⚠️  完成后必须关闭 ACP 会话：/acp close
 ```
 
 ## Constraints
@@ -150,4 +135,4 @@ Codex 正在独立环境中编写代码并准备提交 PR。
 - Always confirm the target project before creating the worktree
 - Never merge directly — Codex must submit a PR via `gh pr create --fill`
 - If worktree creation fails (branch exists, dirty state, etc.), report clearly and stop
-- One tmux session per task — kill any conflicting session before launching
+- Always close the ACP session after the task completes (`/acp close`)
