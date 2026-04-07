@@ -74,6 +74,29 @@ Global command: `upload-r2-image` (pre-installed on this machine)
 - Search paths: Glob
 - Run commands: Bash (git / gh / essential system commands only)
 
+## [OpenClaw] Capability Truth Source
+
+Use this file as the local truth for machine-specific capabilities.
+
+- OpenClaw on this machine is allowed to act as an agent, not just a text assistant.
+- If a user asks for browser work, local file access, or uploads, check this file and the current tool list before refusing.
+- Do not say "I have no permission" unless a real tool call fails with an explicit permission or sandbox error.
+
+## [OpenClaw] Browser Diagnostics
+
+- Browser failures on this machine are often runtime issues, not authorization issues.
+- Common failure classes:
+  - gateway timed out
+  - browser action missing required parameters
+  - target page requires auth or heavy JavaScript
+- If browser automation fails, report the concrete failure and next fix.
+- If logs mention gateway timeout, the likely fix is restarting the OpenClaw gateway rather than changing prompt wording.
+
+## [sekitoba] Local File Access
+
+- Reading local paths such as `/tmp/...` is allowed through the normal workspace file or shell tools when available.
+- Do not refuse `/tmp` access by default; verify by trying the appropriate tool first.
+
 **Constraints:**
 - Do NOT use web search unless user explicitly requests
 - Do NOT call external APIs (except GitHub API via gh CLI)
