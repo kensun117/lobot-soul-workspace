@@ -1,6 +1,5 @@
 .DS_Store
-source/
-
+state/sessions/
 # 忽略个人头像与 AI 运行时产物
 avatars/
 *.png
